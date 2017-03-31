@@ -161,11 +161,11 @@ void setup() {
   //Uncomment if you want to format FS
   //SPIFFS.format();
 
-  updateData();
-
   strip.begin();
   strip.clear();
   strip.show();
+  
+  updateData();
 }
 
 long lastDrew = 0;
@@ -202,9 +202,9 @@ void drawTime(){
 */
   strip.clear();
   strip.setBrightness(10);
-  strip.setPixelColor(timeClient.getSecondsInt(), strip.Color(100,0,0));
-  strip.setPixelColor(timeClient.getMinutesInt(), strip.Color(0,100,0));
-  strip.setPixelColor(map((timeClient.getHoursInt()%12),0,11,0,59)+(timeClient.getMinutesInt()/12), strip.Color(0,0,100));
+  strip.setPixelColor(timeClient.getSecondsInt(), strip.Color(100,20,20));
+  strip.setPixelColor(timeClient.getMinutesInt(), strip.Color(20,100,20));
+  strip.setPixelColor( ((timeClient.getHoursInt()%12)*5)+(timeClient.getMinutesInt()/12), strip.Color(20,20,100));
 
   strip.show();  
 }
