@@ -67,6 +67,8 @@ void handle_root()
   
   if (timeoffset.DST) content.replace("{dst}", "checked='checked'");
   else    content.replace("{dst}", "");
+
+  content.replace("{brightness}", String(timeoffset.brightness).c_str());
       
   server.send(200, "text/html", content);
 }
@@ -77,10 +79,12 @@ void handle_store_settings(){
     Serial.println("setting page refreshed only, no params");      
   }else{
     Serial.println("settings changed");  
-    timeoffset.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());;
+    timeoffset.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());
     timeoffset.DST = server.arg("_dst").length()>0;
+    timeoffset.brightness = atoi(server.arg("_brightness").c_str());
     Serial.print("UTC TimeOffset: "); Serial.println(timeoffset.UTC_OFFSET);
     Serial.print("DST"); Serial.println(timeoffset.DST);
+    Serial.print("brightness"); Serial.println(timeoffset.brightness);
   
     Serial.println("writing custom setting start");
     Serial.println("file: " + CUSTOM_SETTINGS);
@@ -128,6 +132,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 
 void drawTime();
 void updateData();
+uint32_t mixColors(uint32_t c1, uint32_t c2);
   
 void setup() {
   //pinMode(NEOPIXEL_DATA_IN_PIN, OUTPUT);
@@ -172,6 +177,7 @@ long lastDrew = 0;
 long lastUpdate = 0;
 
 long stamp = 0;
+boolean clear = true;
 
 void loop() {
   // Handle web server
@@ -179,9 +185,16 @@ void loop() {
   // Handle OTA update requests
   ArduinoOTA.handle();
 
+  if(timeClient.getMinutesInt() == 0 && timeClient.getSecondsInt()<5){
+    rainbowCycle(5);
+    clear = false;
+  }else{
+    clear = true;
+  }
+
   stamp = millis();
-  if (stamp - lastDrew > 500 || stamp < lastDrew) {
-    drawTime();
+  if (stamp - lastDrew > 500 || stamp < lastDrew || !clear) {
+    drawTime(clear);
     lastDrew = stamp;
   }
 
@@ -191,7 +204,8 @@ void loop() {
   }
 }
 
-void drawTime(){
+int offset = 30;
+void drawTime(boolean clear){
 /* 
   Serial.print("Time ");
   Serial.print(timeClient.getHours());
@@ -200,11 +214,37 @@ void drawTime(){
   Serial.print(":");
   Serial.println(timeClient.getSeconds());  
 */
-  strip.clear();
-  strip.setBrightness(10);
-  strip.setPixelColor(timeClient.getSecondsInt(), strip.Color(100,20,20));
-  strip.setPixelColor(timeClient.getMinutesInt(), strip.Color(20,100,20));
-  strip.setPixelColor( ((timeClient.getHoursInt()%12)*5)+(timeClient.getMinutesInt()/12), strip.Color(20,20,100));
+  uint32_t color = 0;
+  int pos = 0;
+  
+  if(clear) strip.clear();
+  strip.setBrightness(timeoffset.brightness);
+  pos = timeClient.getSecondsInt();
+  pos = (pos +30)%60;
+  color = strip.getPixelColor(pos);
+  strip.setPixelColor(pos, mixColors(color,strip.Color(255,20,20)));
+
+  pos = timeClient.getMinutesInt();
+  pos = (pos +30)%60;
+//  color = strip.getPixelColor((pos-1)%60);
+//  strip.setPixelColor((pos-1)%60, mixColors(color,strip.Color(10,50,10)));
+  color = strip.getPixelColor(pos);
+  strip.setPixelColor(pos, mixColors(color,strip.Color(20,255,20)));
+//  color = strip.getPixelColor((pos+1)%60);
+//  strip.setPixelColor((pos+1)%60, mixColors(color,strip.Color(10,50,10)));
+
+  pos = ((timeClient.getHoursInt()%12)*5)+(timeClient.getMinutesInt()/12);
+  pos = (pos +30)%60;
+//  color = strip.getPixelColor((pos-2)%60);
+//  strip.setPixelColor( (pos-2)%60, mixColors(color,strip.Color(5,5,50)));
+//  color = strip.getPixelColor((pos-1)%60);
+//  strip.setPixelColor( (pos-1)%60, mixColors(color,strip.Color(10,10,50)));
+  color = strip.getPixelColor(pos);
+  strip.setPixelColor( pos, mixColors(color,strip.Color(20,20,255)));
+//  color = strip.getPixelColor((pos+1)%60);
+//  strip.setPixelColor( (pos+1)%60, mixColors(color,strip.Color(10,10,50)));
+//  color = strip.getPixelColor((pos+2)%60);
+//  strip.setPixelColor( (pos+2)%60, mixColors(color,strip.Color(5,5,50)));
 
   strip.show();  
 }
@@ -214,3 +254,53 @@ void updateData(){
   if(forceUpdateData) forceUpdateData=false;
 }
 
+uint32_t mixColors(uint32_t c1, uint32_t c2){
+  uint8_t w1 = c1>>24 & 0xFF;
+  uint8_t r1 = c1>>16 & 0xFF;
+  uint8_t g1 = c1>>8 & 0xFF;
+  uint8_t b1 = c1 & 0xFF;
+  
+  uint8_t w2 = c2>>24 & 0xFF;
+  uint8_t r2 = c2>>16 & 0xFF;
+  uint8_t g2 = c2>>8 & 0xFF;
+  uint8_t b2 = c2 & 0xFF;
+
+  uint8_t w = w1/2+w2/2;
+  uint8_t r = r1/2+r2/2;
+  uint8_t g = g1/2+g2/2;
+  uint8_t b = b1/2+b2/2;
+
+  return ((uint32_t)w << 24) | ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
+}
+
+//------------------------------------------------------------------------
+//effects
+//------------------------------------------------------------------------
+
+// Slightly different, this makes the rainbow equally distributed throughout
+void rainbowCycle(uint8_t wait) {
+  uint16_t i, j;
+
+  for(j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
+    for(i=0; i< strip.numPixels(); i++) {
+      strip.setPixelColor(strip.numPixels()-i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+    }
+    strip.show();
+    delay(wait);
+  }
+}
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if(WheelPos < 170) {
+    WheelPos -= 85;
+    return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
