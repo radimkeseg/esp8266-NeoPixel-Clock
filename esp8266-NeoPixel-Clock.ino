@@ -57,8 +57,16 @@ ESP8266WebServer server(80);
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, NEOPIXEL_DATA_IN_PIN, NEO_GRB + NEO_KHZ800);
 
-/* webserver handlers */
+uint32_t color_hand_hour = 0;
+uint32_t color_hand_mins = 0;
+uint32_t color_hand_secs = 0;
 
+/*prototypes*/
+void drawTime();
+void updateData();
+uint32_t mixColors(uint32_t c1, uint32_t c2);
+
+/* webserver handlers */
 void handle_root()
 {
   String content = FPSTR(PAGE_INDEX);
@@ -69,6 +77,10 @@ void handle_root()
   else    content.replace("{dst}", "");
 
   content.replace("{brightness}", String(timeoffset.brightness).c_str());
+
+  content.replace("{val-hand-hour}", timeoffset.color_hand_hour);
+  content.replace("{val-hand-mins}", timeoffset.color_hand_mins);
+  content.replace("{val-hand-secs}", timeoffset.color_hand_secs);
       
   server.send(200, "text/html", content);
 }
@@ -82,10 +94,16 @@ void handle_store_settings(){
     timeoffset.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());
     timeoffset.DST = server.arg("_dst").length()>0;
     timeoffset.brightness = atoi(server.arg("_brightness").c_str());
+    strncpy(timeoffset.color_hand_hour, server.arg("_input-hand-hour").c_str(), 8);
+    strncpy(timeoffset.color_hand_mins, server.arg("_input-hand-mins").c_str(), 8);
+    strncpy(timeoffset.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
     Serial.print("UTC TimeOffset: "); Serial.println(timeoffset.UTC_OFFSET);
     Serial.print("DST"); Serial.println(timeoffset.DST);
     Serial.print("brightness"); Serial.println(timeoffset.brightness);
-  
+    Serial.print("color hand hour "); Serial.println(timeoffset.color_hand_hour);
+    Serial.print("color hand mins "); Serial.println(timeoffset.color_hand_mins);
+    Serial.print("color hand secs "); Serial.println(timeoffset.color_hand_secs);
+          
     Serial.println("writing custom setting start");
     Serial.println("file: " + CUSTOM_SETTINGS);
     //write location to SPIFF
@@ -99,7 +117,7 @@ void handle_store_settings(){
     f.close();
     Serial.println("writing custom setting end");
     
-    //updateData(false);
+    updateData();
     forceUpdateData = true;
   }
   timeClient.setTimeOffset(timeoffset.UTC_OFFSET+timeoffset.DST);
@@ -129,11 +147,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(myWiFiManager->getConfigPortalSSID());
   Serial.println("To setup Wifi Configuration");
 }
-
-void drawTime();
-void updateData();
-uint32_t mixColors(uint32_t c1, uint32_t c2);
-  
+ 
 void setup() {
   //pinMode(NEOPIXEL_DATA_IN_PIN, OUTPUT);
   Serial.begin(9600);
@@ -222,37 +236,35 @@ void drawTime(boolean clear){
   pos = timeClient.getSecondsInt();
   pos = (pos +30)%60;
   color = strip.getPixelColor(pos);
-  strip.setPixelColor(pos, mixColors(color,strip.Color(255,20,20)));
+  strip.setPixelColor(pos, mixColors(color, color_hand_secs));
 
   pos = timeClient.getMinutesInt();
   pos = (pos +30)%60;
-//  color = strip.getPixelColor((pos-1)%60);
-//  strip.setPixelColor((pos-1)%60, mixColors(color,strip.Color(10,50,10)));
   color = strip.getPixelColor(pos);
-  strip.setPixelColor(pos, mixColors(color,strip.Color(20,255,20)));
-//  color = strip.getPixelColor((pos+1)%60);
-//  strip.setPixelColor((pos+1)%60, mixColors(color,strip.Color(10,50,10)));
+  strip.setPixelColor(pos, mixColors(color, color_hand_mins));
 
   pos = ((timeClient.getHoursInt()%12)*5)+(timeClient.getMinutesInt()/12);
   pos = (pos +30)%60;
-//  color = strip.getPixelColor((pos-2)%60);
-//  strip.setPixelColor( (pos-2)%60, mixColors(color,strip.Color(5,5,50)));
-//  color = strip.getPixelColor((pos-1)%60);
-//  strip.setPixelColor( (pos-1)%60, mixColors(color,strip.Color(10,10,50)));
   color = strip.getPixelColor(pos);
-  strip.setPixelColor( pos, mixColors(color,strip.Color(20,20,255)));
-//  color = strip.getPixelColor((pos+1)%60);
-//  strip.setPixelColor( (pos+1)%60, mixColors(color,strip.Color(10,10,50)));
-//  color = strip.getPixelColor((pos+2)%60);
-//  strip.setPixelColor( (pos+2)%60, mixColors(color,strip.Color(5,5,50)));
+  strip.setPixelColor( pos, mixColors(color, color_hand_hour));
 
   strip.show();  
 }
 
 void updateData(){
   timeClient.updateTime();
+
+  color_hand_hour = hex2rgb(timeoffset.color_hand_hour);
+  color_hand_mins = hex2rgb(timeoffset.color_hand_mins);
+  color_hand_secs = hex2rgb(timeoffset.color_hand_secs);
+  
   if(forceUpdateData) forceUpdateData=false;
 }
+
+
+//------------------------------------------------------------------------
+//color functions
+//------------------------------------------------------------------------
 
 uint32_t mixColors(uint32_t c1, uint32_t c2){
   uint8_t w1 = c1>>24 & 0xFF;
@@ -273,6 +285,38 @@ uint32_t mixColors(uint32_t c1, uint32_t c2){
   return ((uint32_t)w << 24) | ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
 }
 
+uint32_t hex2rgb(char* hexstring) {
+    if(hexstring==NULL) return 0;
+
+    Serial.println(hexstring);
+    Serial.print("len ");
+    Serial.println(strlen(hexstring));
+    
+    if(strlen(hexstring)==4){
+      long number = (long) strtol( &hexstring[1], NULL, 16);
+      int r = number >> 8;
+      int g = number >> 4 & 0xF;
+      int b = number & 0xF;
+    Serial.print("r="); Serial.print(r);
+    Serial.print(",g="); Serial.print(g);
+    Serial.print(",b="); Serial.println(b);
+      return strip.Color(r,g,b);
+    }
+
+    if(strlen(hexstring)==7){
+      long number = (long) strtol( &hexstring[1], NULL, 16);
+      int r = number >> 16;
+      int g = number >> 8 & 0xFF;
+      int b = number & 0xFF;
+    Serial.print("r="); Serial.print(r);
+    Serial.print(",g="); Serial.print(g);
+    Serial.print(",b="); Serial.println(b);
+      return strip.Color(r,g,b);
+    }
+
+    return 0;
+}
+
 //------------------------------------------------------------------------
 //effects
 //------------------------------------------------------------------------
@@ -283,7 +327,7 @@ void rainbowCycle(uint8_t wait) {
 
   for(j=0; j<256*5; j++) { // 5 cycles of all colors on wheel
     for(i=0; i< strip.numPixels(); i++) {
-      strip.setPixelColor(strip.numPixels()-i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+      strip.setPixelColor(strip.numPixels()-i-1, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
     }
     strip.show();
     delay(wait);
@@ -304,3 +348,4 @@ uint32_t Wheel(byte WheelPos) {
   WheelPos -= 170;
   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
+
