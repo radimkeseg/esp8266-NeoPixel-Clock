@@ -27,10 +27,14 @@ const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
 typedef struct
 {
   float UTC_OFFSET; 
-  boolean DST; 
+  boolean DST;
+  uint8_t brightness;
+  char color_hand_hour[8]; 
+  char color_hand_mins[8];
+  char color_hand_secs[8];
 } timeoffset_t;
 
-static timeoffset_t timeoffset = {1,false};
+static timeoffset_t timeoffset = {1,false,10,"#ff0000","#00ff00","#0000ff" };
 
 const String CUSTOM_SETTINGS = "/settings/custom.txt";
 
