@@ -1,6 +1,6 @@
 /**The MIT License (MIT)
 
-Copyright (c) 2015 by Daniel Eichhorn
+Copyright (c) 2017 by Radim Keseg
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,14 +19,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-See more at http://blog.squix.ch
 */
 #pragma once
 
 #include <ESP8266WiFi.h>
-
-#define NTP_PACKET_SIZE 48
 
 class TimeClient {
 
@@ -34,14 +30,9 @@ class TimeClient {
     float myUtcOffset = 0;
     long localEpoc = 0;
     long localMillisAtUpdate;
-    
-    const char* ntpServerName = "time.nist.gov";
-    unsigned int localPort = 2390;
-    
-    byte packetBuffer[ NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
-
-    
+        
   public:
+    TimeClient() : TimeClient(0) {}
     TimeClient(float utcOffset);
     void setTimeOffset(float utcOffset);
     void updateTime();
