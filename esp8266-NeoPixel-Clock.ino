@@ -67,16 +67,16 @@ void handle_root()
 {
   String content = FPSTR(PAGE_INDEX);
 
-  content.replace("{timeoffset}", String(timeoffset.UTC_OFFSET).c_str() );
+  content.replace("{timeoffset}", String(settings.UTC_OFFSET).c_str() );
   
-  if (timeoffset.DST) content.replace("{dst}", "checked='checked'");
+  if (settings.DST) content.replace("{dst}", "checked='checked'");
   else    content.replace("{dst}", "");
 
-  content.replace("{brightness}", String(timeoffset.brightness).c_str());
+  content.replace("{brightness}", String(settings.brightness).c_str());
 
-  content.replace("{val-hand-hour}", timeoffset.color_hand_hour);
-  content.replace("{val-hand-mins}", timeoffset.color_hand_mins);
-  content.replace("{val-hand-secs}", timeoffset.color_hand_secs);
+  content.replace("{val-hand-hour}", settings.color_hand_hour);
+  content.replace("{val-hand-mins}", settings.color_hand_mins);
+  content.replace("{val-hand-secs}", settings.color_hand_secs);
       
   server.send(200, "text/html", content);
 }
@@ -87,25 +87,25 @@ void handle_store_settings(){
     Serial.println("setting page refreshed only, no params");      
   }else{
     Serial.println("settings changed");  
-    timeoffset.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());
-    timeoffset.DST = server.arg("_dst").length()>0;
-    timeoffset.brightness = atoi(server.arg("_brightness").c_str());
-    strncpy(timeoffset.color_hand_hour, server.arg("_input-hand-hour").c_str(), 8);
-    strncpy(timeoffset.color_hand_mins, server.arg("_input-hand-mins").c_str(), 8);
-    strncpy(timeoffset.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
-    Serial.print("UTC TimeOffset: "); Serial.println(timeoffset.UTC_OFFSET);
-    Serial.print("DST"); Serial.println(timeoffset.DST);
-    Serial.print("brightness"); Serial.println(timeoffset.brightness);
-    Serial.print("color hand hour "); Serial.println(timeoffset.color_hand_hour);
-    Serial.print("color hand mins "); Serial.println(timeoffset.color_hand_mins);
-    Serial.print("color hand secs "); Serial.println(timeoffset.color_hand_secs);
+    settings.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());
+    settings.DST = server.arg("_dst").length()>0;
+    settings.brightness = atoi(server.arg("_brightness").c_str());
+    strncpy(settings.color_hand_hour, server.arg("_input-hand-hour").c_str(), 8);
+    strncpy(settings.color_hand_mins, server.arg("_input-hand-mins").c_str(), 8);
+    strncpy(settings.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
+    Serial.print("UTC TimeOffset: "); Serial.println(settings.UTC_OFFSET);
+    Serial.print("DST"); Serial.println(settings.DST);
+    Serial.print("brightness"); Serial.println(settings.brightness);
+    Serial.print("color hand hour "); Serial.println(settings.color_hand_hour);
+    Serial.print("color hand mins "); Serial.println(settings.color_hand_mins);
+    Serial.print("color hand secs "); Serial.println(settings.color_hand_secs);
           
     Serial.println("writing custom setting start");
     Serial.println("file: " + CUSTOM_SETTINGS);
     //write location to SPIFF
     File f = SPIFFS.open(CUSTOM_SETTINGS, "w");
     if (f){
-      f.write((uint8_t*) &timeoffset, sizeof(timeoffset_t));
+      f.write((uint8_t*) &settings, sizeof(settings_t));
     }else{
       Serial.println("open file for writing failed: " + CUSTOM_SETTINGS);
     }
@@ -116,7 +116,7 @@ void handle_store_settings(){
     updateData();
     forceUpdateData = true;
   }
-  clock.SetTimeOffset(timeoffset.UTC_OFFSET+timeoffset.DST);
+  clock.SetTimeOffset(settings.UTC_OFFSET+settings.DST);
   server.send(200, "text/html", "OK");
 }
 
@@ -125,14 +125,14 @@ void read_custom_settings(){
     Serial.println("reading custom setting start");
     File f = SPIFFS.open(CUSTOM_SETTINGS, "r");
     if(f){
-       f.read((uint8_t*) &timeoffset, sizeof(timeoffset_t));
+       f.read((uint8_t*) &settings, sizeof(settings_t));
     }else{
       Serial.println("open file for reading failed: " + CUSTOM_SETTINGS);
     }
     f.close();
     Serial.println("reading custom setting end");
 
-  clock.SetTimeOffset(timeoffset.UTC_OFFSET+timeoffset.DST);
+  clock.SetTimeOffset(settings.UTC_OFFSET+settings.DST);
 }
 /**/
 
@@ -216,9 +216,9 @@ void loop() {
 
 
 void updateData(){
-  strip.setBrightness(timeoffset.brightness);
-  clock.SetTimeOffset(timeoffset.UTC_OFFSET+timeoffset.DST);
-  clock.SetUp(ITimer::hex2rgb(timeoffset.color_hand_hour), ITimer::hex2rgb(timeoffset.color_hand_mins), ITimer::hex2rgb(timeoffset.color_hand_secs));
+  strip.setBrightness(settings.brightness);
+  clock.SetTimeOffset(settings.UTC_OFFSET+settings.DST);
+  clock.SetUp(ITimer::hex2rgb(settings.color_hand_hour), ITimer::hex2rgb(settings.color_hand_mins), ITimer::hex2rgb(settings.color_hand_secs));
   
   if(forceUpdateData) forceUpdateData=false;
 }
