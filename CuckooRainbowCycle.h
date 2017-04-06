@@ -5,7 +5,6 @@
 class CuckooRainbowCycle : virtual public ITimer
 {
     private:
-      uint16_t i=0;
       uint16_t j=0;
 
     public:
