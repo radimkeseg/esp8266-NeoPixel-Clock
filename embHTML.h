@@ -1,3 +1,22 @@
+/**The MIT License (MIT)
+Copyright (c) 2017 by Radim Keseg
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 const char PAGE_INDEX[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
@@ -58,6 +77,9 @@ Neopixel Cuckoo with an ESP8266 IoT device
 <label><input id="input-hand-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-hour" title="e.g. #00f or #0000ff" value="{val-hand-hour}" onkeyup="simplePicker.colorize(this.value,'box-hand-hour')" ><div class="color-box" id="box-hand-hour"></div> hours</label><br/>
 <label><input id="input-hand-mins" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-mins" title="e.g. #0f0 or #00ff00" value="{val-hand-mins}" onkeyup="simplePicker.colorize(this.value,'box-hand-mins')"><div class="color-box" id="box-hand-mins"></div> minutes</label><br/>
 <label><input id="input-hand-secs" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-secs" title="e.g. #f00 or #ff0000" value="{val-hand-secs}" onkeyup="simplePicker.colorize(this.value,'box-hand-secs')"><div class="color-box" id="box-hand-secs"></div> seconds</label><br/>
+<br/>
+<label>ALARM<br><input id='_alarm' name='_alarm' type='checkbox' {alarm}></label><br>
+<label>Time<br><input id='_alarmHour' name='_alarmHour' length=2 pattern='^[0-9]{2,0}$' value='{alarmHour}'>:<input id='_alarmMins' name='_alarmMins' length=2 pattern='^[0-9]{2,0}$' value='{alarmMins}'></label>
 <br/>
 <input type='submit' value='Store and Restart'></form>
 

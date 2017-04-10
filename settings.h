@@ -26,15 +26,18 @@ const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
 // TimeClient settings
 typedef struct
 {
-  float UTC_OFFSET; 
-  boolean DST;
+  float UTC_OFFSET;<<<<<<< Objectize
+  boolean DST; 
   uint8_t brightness;
-  char color_hand_hour[8]; 
+  boolean ALARM_SWITCH; 
+  uint8_t alarmHour;
+  uint8_t alarmMins;
+  char color_hand_hour[8];
   char color_hand_mins[8];
   char color_hand_secs[8];
-} timeoffset_t;
+} settings_t;
 
-static timeoffset_t timeoffset = {1,false,10,"#ff0000","#00ff00","#0000ff" };
+static settings_t settings = {1, false, 10, '#ff0000', '#00ff00', '#0000ff', false, 8, 0};
 
 const String CUSTOM_SETTINGS = "/settings/custom.txt";
 
