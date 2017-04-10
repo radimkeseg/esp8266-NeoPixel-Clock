@@ -17,31 +17,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Setup
-const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
+#include "CuckooAlarm.h"
 
-// pins for the touchscreen
-#define NEOPIXEL_DATA_IN_PIN 2
+//public 
+void CuckooAlarm::Show(boolean clear_background, boolean mix_colors){
+  if(strip==NULL) return;
+  
+  if(j>=3) j=0;  
+  
+  for (int q=0; q < 3; q++) {
+    for (uint16_t i=0; i < strip->numPixels(); i=i+3) {
+      strip->setPixelColor(i+j, color);    //turn every third pixel on
+    }
+    strip->show();
 
-// TimeClient settings
-typedef struct
-{
-  float UTC_OFFSET; 
-  boolean DST; 
-  uint8_t brightness;
-  char color_hand_hour[8];
-  char color_hand_mins[8];
-  char color_hand_secs[8];
-  boolean ALARM_SWITCH; 
-  uint8_t alarmHour;
-  uint8_t alarmMins;
-} settings_t;
+    delay(5);
 
-static settings_t settings = {1, false, 10, '#ff0000', '#00ff00', '#0000ff', false, 8, 0};
-
-const String CUSTOM_SETTINGS = "/settings/custom.txt";
-
-/***************************
- * End Settings
- **************************/
+    for (uint16_t i=0; i < strip->numPixels(); i=i+3) {
+      strip->setPixelColor(i+j, 0);        //turn every third pixel off
+    }
+  }
+  
+  j++;
+}
 

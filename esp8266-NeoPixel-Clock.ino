@@ -58,6 +58,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, NEOPIXEL_DATA_IN_PIN, NEO_GRB + 
 
 Clock clock(&strip);
 CuckooRainbowCycle cuckoo(&strip);
+//CuckooAlarm buzzer(&strip);
 
 /*prototypes*/
 void updateData();
@@ -77,6 +78,12 @@ void handle_root()
   content.replace("{val-hand-hour}", settings.color_hand_hour);
   content.replace("{val-hand-mins}", settings.color_hand_mins);
   content.replace("{val-hand-secs}", settings.color_hand_secs);
+
+  if (settings.ALARM_SWITCH) content.replace("{alarm}", "checked='checked'");
+  else    content.replace("{alarm}", "");
+
+  content.replace("{alarmHour}", String(settings.alarmHour).c_str());
+  content.replace("{alarmMins}", String(settings.alarmMins).c_str());
       
   server.send(200, "text/html", content);
 }
@@ -93,6 +100,10 @@ void handle_store_settings(){
     strncpy(settings.color_hand_hour, server.arg("_input-hand-hour").c_str(), 8);
     strncpy(settings.color_hand_mins, server.arg("_input-hand-mins").c_str(), 8);
     strncpy(settings.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
+    settings.ALARM_SWITCH = server.arg("_alarm").length()>0;
+    settings.alarmHour = atoi(server.arg("_alarmHour").c_str());
+    settings.alarmMins = atoi(server.arg("_alarmMins").c_str());
+    
     Serial.print("UTC TimeOffset: "); Serial.println(settings.UTC_OFFSET);
     Serial.print("DST"); Serial.println(settings.DST);
     Serial.print("brightness"); Serial.println(settings.brightness);
@@ -195,8 +206,17 @@ void loop() {
   // Handle OTA update requests
   ArduinoOTA.handle();
 
-  if(clock.getMinsInt() == 0 && clock.getSecsInt()<5){
-    cuckoo.Show(); delay(5);
+  if(clock.getMinsInt() == 0 && clock.getSecsInt()<10){
+    cuckoo.Show(); 
+    clear = false;
+  }else{
+    clear = true;
+  }
+
+  if(settings.ALARM_SWITCH)
+  if(clock.getHourInt() == settings.alarmHour && clock.getMinsInt() == settings.alarmMins){
+    cuckoo.Show();     
+    //buzzer.Show();
     clear = false;
   }else{
     clear = true;
@@ -204,7 +224,7 @@ void loop() {
 
   stamp = millis();
   if (stamp - lastDrew > 500 || stamp < lastDrew || !clear) {
-    clock.Show(clear, clear);
+    clock.Show(clear, clear); delay(5);
     lastDrew = stamp;
   }
 

@@ -17,31 +17,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Setup
-const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
+#pragma once
 
-// pins for the touchscreen
-#define NEOPIXEL_DATA_IN_PIN 2
+#include "ITimer.h"
 
-// TimeClient settings
-typedef struct
+class CuckooAlarm : virtual public ITimer
 {
-  float UTC_OFFSET; 
-  boolean DST; 
-  uint8_t brightness;
-  char color_hand_hour[8];
-  char color_hand_mins[8];
-  char color_hand_secs[8];
-  boolean ALARM_SWITCH; 
-  uint8_t alarmHour;
-  uint8_t alarmMins;
-} settings_t;
+    private:
+      uint16_t j=0;
+      uint32_t color = Adafruit_NeoPixel::Color(127, 0, 0);
 
-static settings_t settings = {1, false, 10, '#ff0000', '#00ff00', '#0000ff', false, 8, 0};
-
-const String CUSTOM_SETTINGS = "/settings/custom.txt";
-
-/***************************
- * End Settings
- **************************/
-
+    public:
+      CuckooAlarm(Adafruit_NeoPixel *strip) : ITimer(strip){}
+      
+      virtual void Show(boolean clear_background, boolean mix_colors);
+      virtual void Show(){ Show(false, false); }
+};
