@@ -20,10 +20,10 @@ SOFTWARE.
 #include "Clock.h"
     
 //public:
-void Clock::SetUp(uint16_t color_Hand_hour, uint16_t color_Hand_mins, uint16_t color_Hand_secs){
-  color_hand_hour = color_Hand_hour;
-  color_hand_mins = color_Hand_mins;
-  color_hand_secs = color_Hand_secs;
+void Clock::SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs){
+  this->color_hand_hour = color_hand_hour;
+  this->color_hand_mins = color_hand_mins;
+  this->color_hand_secs = color_hand_secs;
 }
         
 void Clock::Show(boolean clear_background, boolean mix_colors){

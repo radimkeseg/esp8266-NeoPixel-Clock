@@ -37,6 +37,7 @@ SOFTWARE.
 #include "ITimer.h"
 #include "Clock.h"
 #include "CuckooRainbowCycle.h"
+#include "CuckooAlarm.h"
 
 // HOSTNAME for OTA update
 #define HOSTNAME "WSC-ESP8266-OTA-"
@@ -58,7 +59,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, NEOPIXEL_DATA_IN_PIN, NEO_GRB + 
 
 Clock clock(&strip);
 CuckooRainbowCycle cuckoo(&strip);
-//CuckooAlarm buzzer(&strip);
+CuckooAlarm buzzer(&strip);
 
 /*prototypes*/
 void updateData();
@@ -215,8 +216,7 @@ void loop() {
 
   if(settings.ALARM_SWITCH)
   if(clock.getHourInt() == settings.alarmHour && clock.getMinsInt() == settings.alarmMins){
-    cuckoo.Show();     
-    //buzzer.Show();
+    buzzer.Show();
     clear = false;
   }else{
     clear = true;
@@ -224,7 +224,7 @@ void loop() {
 
   stamp = millis();
   if (stamp - lastDrew > 500 || stamp < lastDrew || !clear) {
-    clock.Show(clear, clear); delay(5);
+    clock.Show(clear, clear); delay(10);
     lastDrew = stamp;
   }
 

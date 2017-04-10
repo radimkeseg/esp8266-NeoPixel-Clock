@@ -79,7 +79,6 @@ Neopixel Cuckoo with an ESP8266 IoT device
 <label><input id="input-hand-secs" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-secs" title="e.g. #f00 or #ff0000" value="{val-hand-secs}" onkeyup="simplePicker.colorize(this.value,'box-hand-secs')"><div class="color-box" id="box-hand-secs"></div> seconds</label><br/>
 <br/>
 <label>ALARM<br><input id='_alarm' name='_alarm' type='checkbox' {alarm}></label><br>
-<br/>
 <label>Time<br><input id='_alarmHour' name='_alarmHour' length=2 pattern='^[0-9]{2,0}$' value='{alarmHour}'>:<input id='_alarmMins' name='_alarmMins' length=2 pattern='^[0-9]{2,0}$' value='{alarmMins}'></label>
 <br/>
 <input type='submit' value='Store and Restart'></form>

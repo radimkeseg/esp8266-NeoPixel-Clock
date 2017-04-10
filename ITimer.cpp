@@ -21,7 +21,7 @@ SOFTWARE.
 
 uint32_t ITimer::hex2rgb(char* hexstring) {
     if(hexstring==NULL) return 0;
-          
+
     if(strlen(hexstring)==4){
       long number = (long) strtol( &hexstring[1], NULL, 16);
       int r = number >> 8;

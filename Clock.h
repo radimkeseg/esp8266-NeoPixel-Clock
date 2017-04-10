@@ -27,9 +27,9 @@ SOFTWARE.
 class Clock : virtual public ITimer
 {
     private:
-      uint16_t color_hand_hour = 0;
-      uint16_t color_hand_mins = 0; 
-      uint16_t color_hand_secs = 0;
+      uint32_t color_hand_hour = 0;
+      uint32_t color_hand_mins = 0; 
+      uint32_t color_hand_secs = 0;
 
       uint8_t brightness = 10;
       
@@ -44,7 +44,7 @@ class Clock : virtual public ITimer
       virtual void Show(boolean clear_background, boolean mix_colors);
       virtual void Show(){ Show(false, false); }
 
-      virtual void SetUp(uint16_t color_Hand_hour, uint16_t color_Hand_mins, uint16_t color_Hand_secs);        
+      virtual void SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs);        
       virtual void SetTimeOffset(int time_offset);
 
       int getHourInt(){ return timeClient.getHoursInt();}
