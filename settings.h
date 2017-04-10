@@ -26,7 +26,7 @@ const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
 // TimeClient settings
 typedef struct
 {
-  float UTC_OFFSET; 
+  float UTC_OFFSET;<<<<<<< Objectize
   boolean DST; 
   uint8_t brightness;
   boolean ALARM_SWITCH; 
