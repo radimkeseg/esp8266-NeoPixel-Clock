@@ -41,6 +41,7 @@ const char PAGE_INDEX[] PROGMEM = R"=====(
     this.colorize('{val-hand-mins}','box-hand-mins');
     this.colorize('{val-hand-secs}','box-hand-secs');
     this.colorize('{val-segm-hour}','box-segm-hour');
+    this.colorize('{val-dots-hour}','box-dots-hour');
    }   
   };
   

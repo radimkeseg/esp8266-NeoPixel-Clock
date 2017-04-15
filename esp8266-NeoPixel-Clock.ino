@@ -182,13 +182,7 @@ void loop() {
   // Handle OTA update requests
   ArduinoOTA.handle();
 
-  if(clock.getMinsInt() == 0 && clock.getSecsInt()<10){
-    cuckoo.Show(); 
-    clear = false;
-  }else{
-    clear = true;
-  }
-
+  //effect by alarm
   if(cs.settings.ALARM_SWITCH)
   if(clock.getHourInt() == cs.settings.alarmHour && clock.getMinsInt() == cs.settings.alarmMins){
     buzzer.Show();
@@ -197,6 +191,15 @@ void loop() {
     clear = true;
   }
 
+  // effect by the full hour
+  if(clear && clock.getMinsInt() == 0 && clock.getSecsInt()<10){
+    cuckoo.Show(); 
+    clear = false;
+  }else{
+    clear = true;
+  }
+
+  // show clock
   stamp = millis();
   if (stamp - lastDrew > 500 || stamp < lastDrew || !clear) {
     clock.Show(clear, clear); delay(10);
