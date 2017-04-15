@@ -27,7 +27,6 @@ SOFTWARE.
 
 // Helps with connecting to internet
 #include <WiFiManager.h>
-#include <FS.h>
 
 #include <Adafruit_NeoPixel.h>
 
@@ -57,6 +56,8 @@ ESP8266WebServer server(80);
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, NEOPIXEL_DATA_IN_PIN, NEO_GRB + NEO_KHZ800);
 
+CustomSettings cs; 
+
 Clock clock(&strip);
 CuckooRainbowCycle cuckoo(&strip);
 CuckooAlarm buzzer(&strip);
@@ -69,22 +70,23 @@ void handle_root()
 {
   String content = FPSTR(PAGE_INDEX);
 
-  content.replace("{timeoffset}", String(settings.UTC_OFFSET).c_str() );
+  content.replace("{timeoffset}", String(cs.settings.UTC_OFFSET).c_str() );
   
-  if (settings.DST) content.replace("{dst}", "checked='checked'");
+  if (cs.settings.DST) content.replace("{dst}", "checked='checked'");
   else    content.replace("{dst}", "");
 
-  content.replace("{brightness}", String(settings.brightness).c_str());
+  content.replace("{brightness}", String(cs.settings.brightness).c_str());
 
-  content.replace("{val-hand-hour}", settings.color_hand_hour);
-  content.replace("{val-hand-mins}", settings.color_hand_mins);
-  content.replace("{val-hand-secs}", settings.color_hand_secs);
+  content.replace("{val-hand-hour}", cs.settings.color_hand_hour);
+  content.replace("{val-hand-mins}", cs.settings.color_hand_mins);
+  content.replace("{val-hand-secs}", cs.settings.color_hand_secs);
+  content.replace("{val-segm-hour}", cs.settings.color_segm_hour);
 
-  if (settings.ALARM_SWITCH) content.replace("{alarm}", "checked='checked'");
+  if (cs.settings.ALARM_SWITCH) content.replace("{alarm}", "checked='checked'");
   else    content.replace("{alarm}", "");
 
-  content.replace("{alarmHour}", String(settings.alarmHour).c_str());
-  content.replace("{alarmMins}", String(settings.alarmMins).c_str());
+  content.replace("{alarmHour}", String(cs.settings.alarmHour).c_str());
+  content.replace("{alarmMins}", String(cs.settings.alarmMins).c_str());
       
   server.send(200, "text/html", content);
 }
@@ -95,57 +97,27 @@ void handle_store_settings(){
     Serial.println("setting page refreshed only, no params");      
   }else{
     Serial.println("settings changed");  
-    settings.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());
-    settings.DST = server.arg("_dst").length()>0;
-    settings.brightness = atoi(server.arg("_brightness").c_str());
-    strncpy(settings.color_hand_hour, server.arg("_input-hand-hour").c_str(), 8);
-    strncpy(settings.color_hand_mins, server.arg("_input-hand-mins").c_str(), 8);
-    strncpy(settings.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
-    settings.ALARM_SWITCH = server.arg("_alarm").length()>0;
-    settings.alarmHour = atoi(server.arg("_alarmHour").c_str());
-    settings.alarmMins = atoi(server.arg("_alarmMins").c_str());
+    cs.settings.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());
+    cs.settings.DST = server.arg("_dst").length()>0;
+    cs.settings.brightness = atoi(server.arg("_brightness").c_str());
+    strncpy(cs.settings.color_hand_hour, server.arg("_input-hand-hour").c_str(), 8);
+    strncpy(cs.settings.color_hand_mins, server.arg("_input-hand-mins").c_str(), 8);
+    strncpy(cs.settings.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
+    strncpy(cs.settings.color_segm_hour, server.arg("_input-segm-hour").c_str(), 8);
+    cs.settings.ALARM_SWITCH = server.arg("_alarm").length()>0;
+    cs.settings.alarmHour = atoi(server.arg("_alarmHour").c_str());
+    cs.settings.alarmMins = atoi(server.arg("_alarmMins").c_str());
     
-    Serial.print("UTC TimeOffset: "); Serial.println(settings.UTC_OFFSET);
-    Serial.print("DST"); Serial.println(settings.DST);
-    Serial.print("brightness"); Serial.println(settings.brightness);
-    Serial.print("color hand hour "); Serial.println(settings.color_hand_hour);
-    Serial.print("color hand mins "); Serial.println(settings.color_hand_mins);
-    Serial.print("color hand secs "); Serial.println(settings.color_hand_secs);
-          
-    Serial.println("writing custom setting start");
-    Serial.println("file: " + CUSTOM_SETTINGS);
-    //write location to SPIFF
-    File f = SPIFFS.open(CUSTOM_SETTINGS, "w");
-    if (f){
-      f.write((uint8_t*) &settings, sizeof(settings_t));
-    }else{
-      Serial.println("open file for writing failed: " + CUSTOM_SETTINGS);
-    }
-    f.flush();
-    f.close();
-    Serial.println("writing custom setting end");
+    cs.print();          
+    cs.write();
     
     updateData();
     forceUpdateData = true;
   }
-  clock.SetTimeOffset(settings.UTC_OFFSET+settings.DST);
+  clock.SetTimeOffset(cs.settings.UTC_OFFSET+cs.settings.DST);
   server.send(200, "text/html", "OK");
 }
 
-void read_custom_settings(){
-    //read setting from SPIFF
-    Serial.println("reading custom setting start");
-    File f = SPIFFS.open(CUSTOM_SETTINGS, "r");
-    if(f){
-       f.read((uint8_t*) &settings, sizeof(settings_t));
-    }else{
-      Serial.println("open file for reading failed: " + CUSTOM_SETTINGS);
-    }
-    f.close();
-    Serial.println("reading custom setting end");
-
-  clock.SetTimeOffset(settings.UTC_OFFSET+settings.DST);
-}
 /**/
 
 // Called if WiFi has not been configured yet
@@ -159,7 +131,7 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 void setup() {
   //pinMode(NEOPIXEL_DATA_IN_PIN, OUTPUT);
   Serial.begin(9600);
-
+    
   // Uncomment for testing wifi manager
   //wifiManager.resetSettings();
   wifiManager.setAPCallback(configModeCallback);
@@ -176,8 +148,12 @@ void setup() {
   WiFi.hostname(hostname);
   ArduinoOTA.setHostname((const char *)hostname.c_str());
   ArduinoOTA.begin();
-  SPIFFS.begin();
-  read_custom_settings();   
+  
+  cs.init();
+  cs.read();   
+  cs.print();
+
+  clock.SetTimeOffset(cs.settings.UTC_OFFSET+cs.settings.DST);   
 
   //user setting handling
   server.on("/", handle_root);
@@ -185,9 +161,6 @@ void setup() {
   server.begin(); 
   Serial.println("HTTP server started"); 
   
-  //Uncomment if you want to format FS
-  //SPIFFS.format();
-
   strip.begin();
   strip.clear();
   strip.show();
@@ -214,8 +187,8 @@ void loop() {
     clear = true;
   }
 
-  if(settings.ALARM_SWITCH)
-  if(clock.getHourInt() == settings.alarmHour && clock.getMinsInt() == settings.alarmMins){
+  if(cs.settings.ALARM_SWITCH)
+  if(clock.getHourInt() == cs.settings.alarmHour && clock.getMinsInt() == cs.settings.alarmMins){
     buzzer.Show();
     clear = false;
   }else{
@@ -236,9 +209,9 @@ void loop() {
 
 
 void updateData(){
-  strip.setBrightness(settings.brightness);
-  clock.SetTimeOffset(settings.UTC_OFFSET+settings.DST);
-  clock.SetUp(ITimer::hex2rgb(settings.color_hand_hour), ITimer::hex2rgb(settings.color_hand_mins), ITimer::hex2rgb(settings.color_hand_secs));
+  strip.setBrightness(cs.settings.brightness);
+  clock.SetTimeOffset(cs.settings.UTC_OFFSET+cs.settings.DST);
+  clock.SetUp(ITimer::hex2rgb(cs.settings.color_hand_hour), ITimer::hex2rgb(cs.settings.color_hand_mins), ITimer::hex2rgb(cs.settings.color_hand_secs), ITimer::hex2rgb(cs.settings.color_segm_hour));
   
   if(forceUpdateData) forceUpdateData=false;
 }

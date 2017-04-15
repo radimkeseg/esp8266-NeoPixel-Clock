@@ -16,6 +16,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#pragma once
+
+#include <FS.h> 
 
 // Setup
 const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
@@ -26,7 +29,7 @@ const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
 // TimeClient settings
 typedef struct
 {
-  float UTC_OFFSET;<<<<<<< Objectize
+  float UTC_OFFSET;
   boolean DST; 
   uint8_t brightness;
   boolean ALARM_SWITCH; 
@@ -35,13 +38,37 @@ typedef struct
   char color_hand_hour[8];
   char color_hand_mins[8];
   char color_hand_secs[8];
+  char color_segm_hour[8];
 } settings_t;
 
-static settings_t settings = {1, false, 10, '#ff0000', '#00ff00', '#0000ff', false, 8, 0};
-
-const String CUSTOM_SETTINGS = "/settings/custom.txt";
 
 /***************************
  * End Settings
  **************************/
+
+class CustomSettings{
+  private:
+     const String CUSTOM_SETTINGS = "/settings/custom.txt";
+  
+  public:
+    settings_t settings;
+
+    CustomSettings(){
+      settings.UTC_OFFSET = 1;
+      settings.DST = false;
+      settings.brightness = 10;
+      settings.ALARM_SWITCH = false;
+      settings.alarmHour = 8;
+      settings.alarmMins = 0;
+      strncpy(settings.color_hand_hour, "#ff0000", 8);
+      strncpy(settings.color_hand_mins, "#00ff00", 8);
+      strncpy(settings.color_hand_secs, "#0000ff", 8);
+      strncpy(settings.color_segm_hour, "#aaaa00", 8);
+    }
+    void init();
+
+    void write();
+    void read();
+    void print();
+}; 
 

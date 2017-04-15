@@ -30,12 +30,13 @@ class Clock : virtual public ITimer
       uint32_t color_hand_hour = 0;
       uint32_t color_hand_mins = 0; 
       uint32_t color_hand_secs = 0;
+      uint32_t color_segm_hour = 0; //hour segment
 
       uint8_t brightness = 10;
       
       TimeClient timeClient;
   
-      const long time_update_interval = 12*60*60*1000;
+      const long time_update_interval = 12*60*60*1000; //update every 12 hrs
       long last_time_update = time_update_interval;
     
     public:
@@ -44,7 +45,7 @@ class Clock : virtual public ITimer
       virtual void Show(boolean clear_background, boolean mix_colors);
       virtual void Show(){ Show(false, false); }
 
-      virtual void SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs);        
+      virtual void SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs, uint32_t color_segm_hour);        
       virtual void SetTimeOffset(int time_offset);
 
       int getHourInt(){ return timeClient.getHoursInt();}

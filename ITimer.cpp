@@ -27,7 +27,7 @@ uint32_t ITimer::hex2rgb(char* hexstring) {
       int r = number >> 8;
       int g = number >> 4 & 0xF;
       int b = number & 0xF;
-      return Adafruit_NeoPixel::Color(r,g,b);
+      return Adafruit_NeoPixel::Color(r+r*8,g+g*8,b+b*8);
    }
 
     if(strlen(hexstring)==7){

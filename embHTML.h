@@ -40,6 +40,7 @@ const char PAGE_INDEX[] PROGMEM = R"=====(
     this.colorize('{val-hand-hour}','box-hand-hour');
     this.colorize('{val-hand-mins}','box-hand-mins');
     this.colorize('{val-hand-secs}','box-hand-secs');
+    this.colorize('{val-segm-hour}','box-segm-hour');
    }   
   };
   
@@ -77,6 +78,7 @@ Neopixel Cuckoo with an ESP8266 IoT device
 <label><input id="input-hand-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-hour" title="e.g. #00f or #0000ff" value="{val-hand-hour}" onkeyup="simplePicker.colorize(this.value,'box-hand-hour')" ><div class="color-box" id="box-hand-hour"></div> hours</label><br/>
 <label><input id="input-hand-mins" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-mins" title="e.g. #0f0 or #00ff00" value="{val-hand-mins}" onkeyup="simplePicker.colorize(this.value,'box-hand-mins')"><div class="color-box" id="box-hand-mins"></div> minutes</label><br/>
 <label><input id="input-hand-secs" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-secs" title="e.g. #f00 or #ff0000" value="{val-hand-secs}" onkeyup="simplePicker.colorize(this.value,'box-hand-secs')"><div class="color-box" id="box-hand-secs"></div> seconds</label><br/>
+<label><input id="input-segm-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-segm-hour" title="e.g. #f00 or #ff0000" value="{val-segm-hour}" onkeyup="simplePicker.colorize(this.value,'box-segm-hour')"><div class="color-box" id="box-segm-hour"></div> hour segment</label><br/>
 <br/>
 <label>ALARM<br><input id='_alarm' name='_alarm' type='checkbox' {alarm}></label><br>
 <label>Time<br><input id='_alarmHour' name='_alarmHour' length=2 pattern='^[0-9]{2,0}$' value='{alarmHour}'>:<input id='_alarmMins' name='_alarmMins' length=2 pattern='^[0-9]{2,0}$' value='{alarmMins}'></label>

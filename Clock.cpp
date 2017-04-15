@@ -20,10 +20,11 @@ SOFTWARE.
 #include "Clock.h"
     
 //public:
-void Clock::SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs){
+void Clock::SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs, uint32_t color_segm_hour){
   this->color_hand_hour = color_hand_hour;
   this->color_hand_mins = color_hand_mins;
   this->color_hand_secs = color_hand_secs;
+  this->color_segm_hour = color_segm_hour;
 }
         
 void Clock::Show(boolean clear_background, boolean mix_colors){
@@ -40,8 +41,38 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
   
   if(clear_background) strip->clear();
   
-  pos = timeClient.getSecondsInt();
-  pos = (pos +30)%60;
+  int hour_pos = ((timeClient.getHoursInt()%12)*5);
+  int mins_pos = timeClient.getMinutesInt();
+  int secs_pos = timeClient.getSecondsInt();
+  
+  for(int i=0; i<5; i++){
+    pos = (hour_pos +i +30)%60; //offset - stripe starts at bottom
+    if(i == mins_pos/12 ){  
+      if(mix_colors){
+        color = strip->getPixelColor(pos);
+        strip->setPixelColor( pos, mixColors(color, color_hand_hour));
+      }else{
+        strip->setPixelColor( pos, color_hand_hour);    
+      }
+    }else{
+      if(mix_colors){
+        color = strip->getPixelColor(pos);
+        strip->setPixelColor( pos, mixColors(color, color_segm_hour));
+      }else{
+        strip->setPixelColor( pos, color_hand_hour);    
+      }      
+    }
+  }
+
+  pos = (mins_pos +30)%60; //offset - stripe starts at bottom
+  if(mix_colors){
+    color = strip->getPixelColor(pos);
+    strip->setPixelColor(pos, mixColors(color, color_hand_mins));
+  }else{
+    strip->setPixelColor(pos, color_hand_mins);  
+  }
+
+  pos = (secs_pos +30)%60; //offset - stripe starts at bottom
   if(mix_colors){
     color = strip->getPixelColor(pos);
     strip->setPixelColor(pos, mixColors(color, color_hand_secs));
@@ -49,23 +80,7 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
     strip->setPixelColor(pos, color_hand_secs);
   }
   
-  pos = timeClient.getMinutesInt();
-  pos = (pos +30)%60;
-  if(mix_colors){
-    color = strip->getPixelColor(pos);
-    strip->setPixelColor(pos, mixColors(color, color_hand_mins));
-  }else{
-    strip->setPixelColor(pos, color_hand_mins);  
-  }
   
-  pos = ((timeClient.getHoursInt()%12)*5)+(timeClient.getMinutesInt()/12);
-  pos = (pos +30)%60;
-  if(mix_colors){
-    color = strip->getPixelColor(pos);
-    strip->setPixelColor( pos, mixColors(color, color_hand_hour));
-  }else{
-    strip->setPixelColor( pos, color_hand_hour);    
-  }
 
   strip->show();  
 }
