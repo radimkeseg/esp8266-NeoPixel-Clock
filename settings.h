@@ -62,8 +62,8 @@ class CustomSettings{
       settings.alarmMins = 0;
       strncpy(settings.color_hand_hour, "#ff0000", 8);
       strncpy(settings.color_hand_mins, "#00ff00", 8);
-      strncpy(settings.color_hand_secs, "#0000ff", 8);
-      strncpy(settings.color_segm_hour, "#aaaa00", 8);
+      strncpy(settings.color_hand_secs, "#000055", 8);
+      strncpy(settings.color_segm_hour, "#000022", 8);
     }
     void init();
 

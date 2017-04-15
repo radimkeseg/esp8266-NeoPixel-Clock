@@ -45,6 +45,16 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
   int mins_pos = timeClient.getMinutesInt();
   int secs_pos = timeClient.getSecondsInt();
   
+  for(int i=0; i<12; i++){ // hour points+
+    pos = (i*5 +30)%60; //offset - stripe starts at bottom
+      if(mix_colors){
+        color = strip->getPixelColor(pos);
+        strip->setPixelColor( pos, mixColors(color, color_segm_hour));
+      }else{
+        strip->setPixelColor( pos, color_hand_hour);    
+      }
+  }
+  
   for(int i=0; i<5; i++){
     pos = (hour_pos +i +30)%60; //offset - stripe starts at bottom
     if(i == mins_pos/12 ){  
