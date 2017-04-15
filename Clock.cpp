@@ -52,11 +52,11 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
         color = strip->getPixelColor(pos);
         strip->setPixelColor( pos, mixColors(color, color_dots_hour));
       }else{
-        strip->setPixelColor( pos, color_hand_hour);    
+        strip->setPixelColor( pos, color_dots_hour);    
       }
   }
   
-  for(int i=1; i<5; i++){
+  for(int i=0; i<=5; i++){
     pos = (hour_pos +i +30)%60; //offset - stripe starts at bottom
     if(i == mins_pos/12 ){  
       if(mix_colors){
@@ -70,7 +70,7 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
         color = strip->getPixelColor(pos);
         strip->setPixelColor( pos, mixColors(color, color_segm_hour));
       }else{
-        strip->setPixelColor( pos, color_hand_hour);    
+        strip->setPixelColor( pos, color_segm_hour);    
       }      
     }
   }
