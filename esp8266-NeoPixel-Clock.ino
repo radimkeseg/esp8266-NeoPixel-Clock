@@ -191,7 +191,7 @@ void loop() {
     clear = false;
   }
 
-  // effect by the full hour
+  // cuckoo effect by the full hour
   if(clock.getMinsInt() == 0 && clock.getSecsInt()<10){
     cuckoo.Show(); 
     clear = false;
