@@ -42,6 +42,7 @@ const char PAGE_INDEX[] PROGMEM = R"=====(
     this.colorize('{val-hand-secs}','box-hand-secs');
     this.colorize('{val-segm-hour}','box-segm-hour');
     this.colorize('{val-dots-hour}','box-dots-hour');
+    this.colorize('{val-dots-qrtr}','box-dots-qrtr');
    }   
   };
   
@@ -76,17 +77,18 @@ Neopixel Cuckoo with an ESP8266 IoT device
 <label>Brightness<br><input id='_brightness' name='_brightness' length=3 pattern='^[0-9]{3,0}$' value='{brightness}'></label><br>
 <br/>
 <lable>Hand colors:</label><br/>
-<label><input id="input-hand-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-hour" title="e.g. #00f or #0000ff" value="{val-hand-hour}" onkeyup="simplePicker.colorize(this.value,'box-hand-hour')" ><div class="color-box" id="box-hand-hour"></div> hours</label><br/>
-<label><input id="input-hand-mins" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-mins" title="e.g. #0f0 or #00ff00" value="{val-hand-mins}" onkeyup="simplePicker.colorize(this.value,'box-hand-mins')"><div class="color-box" id="box-hand-mins"></div> minutes</label><br/>
-<label><input id="input-hand-secs" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-secs" title="e.g. #f00 or #ff0000" value="{val-hand-secs}" onkeyup="simplePicker.colorize(this.value,'box-hand-secs')"><div class="color-box" id="box-hand-secs"></div> seconds</label><br/>
+<label><input id="input-hand-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-hour" title="e.g. #f00 or #ff0000" value="{val-hand-hour}" onkeyup="simplePicker.colorize(this.value,'box-hand-hour')" ><div class="color-box" id="box-hand-hour"></div> hours</label><br/>
+<label><input id="input-hand-mins" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-mins" title="e.g. #0a0 or #00aa00" value="{val-hand-mins}" onkeyup="simplePicker.colorize(this.value,'box-hand-mins')"><div class="color-box" id="box-hand-mins"></div> minutes</label><br/>
+<label><input id="input-hand-secs" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-secs" title="e.g. #202 or #220022" value="{val-hand-secs}" onkeyup="simplePicker.colorize(this.value,'box-hand-secs')"><div class="color-box" id="box-hand-secs"></div> seconds</label><br/>
 <label>Face</label><br>
-<label><input id="input-segm-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-segm-hour" title="e.g. #f00 or #ff0000" value="{val-segm-hour}" onkeyup="simplePicker.colorize(this.value,'box-segm-hour')"><div class="color-box" id="box-segm-hour"></div> hour segment</label><br/>
-<label><input id="input-dots-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-dots-hour" title="e.g. #f00 or #ff0000" value="{val-dots-hour}" onkeyup="simplePicker.colorize(this.value,'box-dots-hour')"><div class="color-box" id="box-dots-hour"></div> hour dots</label><br/>
+<label><input id="input-segm-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-segm-hour" title="e.g. #220 or #222200" value="{val-segm-hour}" onkeyup="simplePicker.colorize(this.value,'box-segm-hour')"><div class="color-box" id="box-segm-hour"></div> hour segment</label><br/>
+<label><input id="input-dots-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-dots-hour" title="e.g. #002 or #000022" value="{val-dots-hour}" onkeyup="simplePicker.colorize(this.value,'box-dots-hour')"><div class="color-box" id="box-dots-hour"></div> hour dots</label><br/>
+<label><input id="input-dots-qrtr" type="text" pattern="#[0-9a-f]{3,6}" name="_input-dots-qrtr" title="e.g. #005 or #000055" value="{val-dots-qrtr}" onkeyup="simplePicker.colorize(this.value,'box-dots-qrtr')"><div class="color-box" id="box-dots-qrtr"></div> quarter dots</label><br/>
 <br/>
 <label>ALARM<br><input id='_alarm' name='_alarm' type='checkbox' {alarm}></label><br>
 <label>Time<br><input id='_alarmHour' name='_alarmHour' length=2 pattern='^[0-9]{2,0}$' value='{alarmHour}'>:<input id='_alarmMins' name='_alarmMins' length=2 pattern='^[0-9]{2,0}$' value='{alarmMins}'></label>
 <br/>
-<input type='submit' value='Store and Restart'></form>
+<input type='submit' value='Store'></form>
 
 
 </body>

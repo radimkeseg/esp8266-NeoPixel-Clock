@@ -40,6 +40,7 @@ typedef struct
   char color_hand_secs[8];
   char color_segm_hour[8];
   char color_dots_hour[8];
+  char color_dots_qrtr[8];
 } settings_t;
 
 
@@ -62,10 +63,11 @@ class CustomSettings{
       settings.alarmHour = 8;
       settings.alarmMins = 0;
       strncpy(settings.color_hand_hour, "#ff0000", 8);
-      strncpy(settings.color_hand_mins, "#00ff00", 8);
-      strncpy(settings.color_hand_secs, "#000055", 8);
+      strncpy(settings.color_hand_mins, "#00aa00", 8);
+      strncpy(settings.color_hand_secs, "#220022", 8);
       strncpy(settings.color_segm_hour, "#222200", 8);
       strncpy(settings.color_dots_hour, "#000022", 8);
+      strncpy(settings.color_dots_qrtr, "#000055", 8);
     }
     void init();
 

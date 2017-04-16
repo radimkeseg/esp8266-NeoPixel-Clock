@@ -82,6 +82,7 @@ void handle_root()
   content.replace("{val-hand-secs}", cs.settings.color_hand_secs);
   content.replace("{val-segm-hour}", cs.settings.color_segm_hour);
   content.replace("{val-dots-hour}", cs.settings.color_dots_hour);
+  content.replace("{val-dots-qrtr}", cs.settings.color_dots_qrtr);
 
   if (cs.settings.ALARM_SWITCH) content.replace("{alarm}", "checked='checked'");
   else    content.replace("{alarm}", "");
@@ -106,6 +107,7 @@ void handle_store_settings(){
     strncpy(cs.settings.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
     strncpy(cs.settings.color_segm_hour, server.arg("_input-segm-hour").c_str(), 8);
     strncpy(cs.settings.color_dots_hour, server.arg("_input-dots-hour").c_str(), 8);
+    strncpy(cs.settings.color_dots_qrtr, server.arg("_input-dots-qrtr").c_str(), 8);
     cs.settings.ALARM_SWITCH = server.arg("_alarm").length()>0;
     cs.settings.alarmHour = atoi(server.arg("_alarmHour").c_str());
     cs.settings.alarmMins = atoi(server.arg("_alarmMins").c_str());
@@ -214,7 +216,10 @@ void loop() {
 void updateData(){
   strip.setBrightness(cs.settings.brightness);
   clock.SetTimeOffset(cs.settings.UTC_OFFSET+cs.settings.DST);
-  clock.SetUp(ITimer::hex2rgb(cs.settings.color_hand_hour), ITimer::hex2rgb(cs.settings.color_hand_mins), ITimer::hex2rgb(cs.settings.color_hand_secs), ITimer::hex2rgb(cs.settings.color_segm_hour), ITimer::hex2rgb(cs.settings.color_dots_hour));
+  clock.SetUp(ITimer::hex2rgb(
+    cs.settings.color_hand_hour), ITimer::hex2rgb(cs.settings.color_hand_mins), ITimer::hex2rgb(cs.settings.color_hand_secs), ITimer::hex2rgb(cs.settings.color_segm_hour), 
+    ITimer::hex2rgb(cs.settings.color_dots_hour), ITimer::hex2rgb(cs.settings.color_dots_qrtr)
+  );
   
   if(forceUpdateData) forceUpdateData=false;
 }

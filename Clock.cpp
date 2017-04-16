@@ -20,12 +20,13 @@ SOFTWARE.
 #include "Clock.h"
     
 //public:
-void Clock::SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs, uint32_t color_segm_hour, uint32_t color_dots_hour){
+void Clock::SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs, uint32_t color_segm_hour, uint32_t color_dots_hour, uint32_t color_dots_qrtr){
   this->color_hand_hour = color_hand_hour;
   this->color_hand_mins = color_hand_mins;
   this->color_hand_secs = color_hand_secs;
   this->color_segm_hour = color_segm_hour;
   this->color_dots_hour = color_dots_hour;
+  this->color_dots_qrtr = color_dots_qrtr;
 }
         
 void Clock::Show(boolean clear_background, boolean mix_colors){
@@ -50,9 +51,11 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
     pos = (i*5 +30)%60; //offset - stripe starts at bottom
       if(mix_colors){
         color = strip->getPixelColor(pos);
-        strip->setPixelColor( pos, mixColors(color, color_dots_hour));
+        if(i%3 == 0) strip->setPixelColor( pos, mixColors(color, color_dots_qrtr));
+        else strip->setPixelColor( pos, mixColors(color, color_dots_hour));
       }else{
-        strip->setPixelColor( pos, color_dots_hour);    
+        if(i%3 == 0) strip->setPixelColor( pos, color_dots_qrtr);
+        else strip->setPixelColor( pos, color_dots_hour);    
       }
   }
   

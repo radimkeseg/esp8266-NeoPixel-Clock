@@ -75,5 +75,6 @@ void CustomSettings::print(){
     Serial.print("color hand secs: "); Serial.println(settings.color_hand_secs);
     Serial.print("color segment hour: "); Serial.println(settings.color_segm_hour);
     Serial.print("color dots hour: "); Serial.println(settings.color_dots_hour);
+    Serial.print("color dots quarter: "); Serial.println(settings.color_dots_qrtr);
 }
 

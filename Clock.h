@@ -31,7 +31,8 @@ class Clock : virtual public ITimer
       uint32_t color_hand_mins = 0; 
       uint32_t color_hand_secs = 0;
       uint32_t color_segm_hour = 0; //hour segment
-      uint32_t color_dots_hour = 0; //hour segment
+      uint32_t color_dots_hour = 0; //full hour dots
+      uint32_t color_dots_qrtr = 0; //quarter dots
 
       uint8_t brightness = 10;
       
@@ -46,8 +47,8 @@ class Clock : virtual public ITimer
       virtual void Show(boolean clear_background, boolean mix_colors);
       virtual void Show(){ Show(false, false); }
 
-      virtual void SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs){ SetUp(color_hand_hour, color_hand_mins, color_hand_secs, 0, 0); }        
-      virtual void SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs, uint32_t color_segm_hour, uint32_t color_dots_hour);        
+      virtual void SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs){ SetUp(color_hand_hour, color_hand_mins, color_hand_secs, 0, 0, 0); }        
+      virtual void SetUp(uint32_t color_hand_hour, uint32_t color_hand_mins, uint32_t color_hand_secs, uint32_t color_segm_hour, uint32_t color_dots_hour, uint32_t color_dots_qrtr);        
       virtual void SetTimeOffset(int time_offset);
 
       int getHourInt(){ return timeClient.getHoursInt();}
