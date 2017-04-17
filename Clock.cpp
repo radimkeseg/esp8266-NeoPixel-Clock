@@ -65,7 +65,7 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
     if(i == mins_pos){ // minute hand
       setPixel( pos, color_hand_mins ,false);            
     }
-    if(i == hour_pos){ // hour hand
+    if(i == (hour_pos + mins_pos/12)){ // hour hand
       setPixel( pos, color_hand_hour ,false);            
     }
   }
