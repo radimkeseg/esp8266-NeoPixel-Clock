@@ -33,74 +33,61 @@ void Clock::Show(boolean clear_background, boolean mix_colors){
   uint32_t color = 0;
   int pos = 0;
 
+  if(strip == NULL) return;
+  
   long stamp = millis();
   if(stamp - last_time_update > time_update_interval || stamp < last_time_update ){
     last_time_update = stamp;
     timeClient.updateTime();
   }
 
-  if(strip == NULL) return;
-  
   if(clear_background) strip->clear();
   
   int hour_pos = ((timeClient.getHoursInt()%12)*5);
   int mins_pos = timeClient.getMinutesInt();
   int secs_pos = timeClient.getSecondsInt();
-  
-  for(int i=0; i<12; i++){ // hour dots
-    pos = (i*5 +30)%60; //offset - stripe starts at bottom
-      if(mix_colors){
-        color = strip->getPixelColor(pos);
-        if(i%3 == 0) strip->setPixelColor( pos, mixColors(color, color_dots_qrtr));
-        else strip->setPixelColor( pos, mixColors(color, color_dots_hour));
-      }else{
-        if(i%3 == 0) strip->setPixelColor( pos, color_dots_qrtr);
-        else strip->setPixelColor( pos, color_dots_hour);    
-      }
-  }
-  
-  for(int i=0; i<=5; i++){
-    pos = (hour_pos +i +30)%60; //offset - stripe starts at bottom
-    if(i == mins_pos/12 ){  
-      if(mix_colors){
-        color = strip->getPixelColor(pos);
-        strip->setPixelColor( pos, mixColors(color, color_hand_hour));
-      }else{
-        strip->setPixelColor( pos, color_hand_hour);    
-      }
-    }else{
-      if(mix_colors){
-        color = strip->getPixelColor(pos);
-        strip->setPixelColor( pos, mixColors(color, color_segm_hour));
-      }else{
-        strip->setPixelColor( pos, color_segm_hour);    
-      }      
+
+  int count = strip->numPixels(); 
+  for(int i=0; i<count; i++){
+    pos=(i + pixel_offset)%count;
+    if(i%5 == 0){ //full hour dots
+      setPixel( pos, color_dots_hour ,mix_colors);
+    }
+    if(i%15 == 0){ // quarter dots
+      setPixel( pos, color_dots_qrtr ,mix_colors);      
+    }
+    if(i > hour_pos && i < (hour_pos + 5)){ // hour segment
+      setPixel( pos, color_segm_hour ,mix_colors);            
+    }
+    if(i == secs_pos){ // second hand
+      setPixel( pos, color_hand_secs ,mix_colors);            
+    }
+    if(i == mins_pos){ // minute hand
+      setPixel( pos, color_hand_mins ,false);            
+    }
+    if(i == hour_pos){ // hour hand
+      setPixel( pos, color_hand_hour ,false);            
     }
   }
-
-  pos = (mins_pos +30)%60; //offset - stripe starts at bottom
-  if(mix_colors){
-    color = strip->getPixelColor(pos);
-    strip->setPixelColor(pos, mixColors(color, color_hand_mins));
-  }else{
-    strip->setPixelColor(pos, color_hand_mins);  
-  }
-
-  pos = (secs_pos +30)%60; //offset - stripe starts at bottom
-  if(mix_colors){
-    color = strip->getPixelColor(pos);
-    strip->setPixelColor(pos, mixColors(color, color_hand_secs));
-  }else{
-    strip->setPixelColor(pos, color_hand_secs);
-  }
-  
-  
-
+   
   strip->show();  
 }
 
 void Clock::SetTimeOffset(int time_offset){
   timeClient.setTimeOffset(time_offset);
   timeClient.updateTime();
+}
+
+//private
+void Clock::setPixel(int pos, uint32_t color, boolean mix_color){
+  if(mix_color){
+    uint32_t bg_color = strip->getPixelColor(pos);
+    if( bg_color == 0 ) //if bg color is black dont mix just draw
+      strip->setPixelColor(pos, color);
+    else
+      strip->setPixelColor(pos, mixColors(bg_color, color));
+  }else{
+    strip->setPixelColor(pos, color);
+  }
 }
 

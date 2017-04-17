@@ -40,6 +40,10 @@ class Clock : virtual public ITimer
   
       const long time_update_interval = 12*60*60*1000; //update every 12 hrs
       long last_time_update = time_update_interval;
+
+      int pixel_offset = 30;
+
+      void setPixel(int position, uint32_t color, boolean mix_color);
     
     public:
       Clock(Adafruit_NeoPixel *strip) : ITimer(strip){}
