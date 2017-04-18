@@ -23,6 +23,9 @@ SOFTWARE.
 // Setup
 const int UPDATE_INTERVAL_SECS = 24* 10 * 60;  // Update every 24 hrs
 
+#define update_username "admin"
+#define update_password "admin"
+
 // pins for the touchscreen
 #define NEOPIXEL_DATA_IN_PIN 2
 

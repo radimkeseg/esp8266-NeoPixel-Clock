@@ -24,6 +24,7 @@ SOFTWARE.
 #include <ESP8266mDNS.h>
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPUpdateServer.h>
 
 // Helps with connecting to internet
 #include <WiFiManager.h>
@@ -39,12 +40,13 @@ SOFTWARE.
 #include "CuckooAlarm.h"
 
 // HOSTNAME for OTA update
-#define HOSTNAME "WSC-ESP8266-OTA-"
+#define HOSTNAME "WSC-ESP8266-"
 
 //WiFiManager
 //Local intialization. Once its business is done, there is no need to keep it around
 WiFiManager wifiManager;
 ESP8266WebServer server(80);
+ESP8266HTTPUpdateServer httpUpdater;
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -150,8 +152,8 @@ void setup() {
   String hostname(HOSTNAME);
   hostname += String(ESP.getChipId(), HEX);
   WiFi.hostname(hostname);
-  ArduinoOTA.setHostname((const char *)hostname.c_str());
-  ArduinoOTA.begin();
+//  ArduinoOTA.setHostname((const char *)hostname.c_str());
+//  ArduinoOTA.begin();
   
   cs.init();
   cs.read();   
@@ -159,11 +161,17 @@ void setup() {
 
   clock.SetTimeOffset(cs.settings.UTC_OFFSET+cs.settings.DST);   
 
+  MDNS.begin( (hostname+"-webupdate").c_str() );
+  httpUpdater.setup(&server, "/firmware", update_username, update_password );
+
+
   //user setting handling
   server.on("/", handle_root);
   server.on("/offset", handle_store_settings);
   server.begin(); 
-  Serial.println("HTTP server started"); 
+  Serial.println("HTTP server started");
+
+  MDNS.addService("http", "tcp", 80);
   
   strip.begin();
   strip.clear();
@@ -182,7 +190,7 @@ void loop() {
   // Handle web server
   server.handleClient();
   // Handle OTA update requests
-  ArduinoOTA.handle();
+//  ArduinoOTA.handle();
 
   clear = true;
 
