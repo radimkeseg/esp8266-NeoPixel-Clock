@@ -34,19 +34,18 @@ class Clock : virtual public ITimer
       uint32_t color_dots_hour = 0; //full hour dots
       uint32_t color_dots_qrtr = 0; //quarter dots
 
-      uint8_t brightness = 10;
-      
       TimeClient timeClient;
   
       const long time_update_interval = 12*60*60*1000; //update every 12 hrs
       long last_time_update = time_update_interval;
 
-      int pixel_offset = 30;
+      int pixel_offset = 0; //useful move the start point, in case the connectors are on bottom and number of pixels is 60 then the offest needs to be 30      
 
       void setPixel(int position, uint32_t color, boolean mix_color);
     
     public:
       Clock(Adafruit_NeoPixel *strip) : ITimer(strip){}
+      Clock(Adafruit_NeoPixel *strip, int pixel_offset) : ITimer(strip){ this->pixel_offset = pixel_offset; }
     
       virtual void Show(boolean clear_background, boolean mix_colors);
       virtual void Show(){ Show(false, false); }

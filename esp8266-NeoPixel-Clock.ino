@@ -60,7 +60,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, NEOPIXEL_DATA_IN_PIN, NEO_GRB + 
 
 CustomSettings cs; 
 
-Clock clock(&strip);
+Clock clock(&strip, 30);
 CuckooRainbowCycle cuckoo(&strip);
 CuckooAlarm buzzer(&strip);
 
