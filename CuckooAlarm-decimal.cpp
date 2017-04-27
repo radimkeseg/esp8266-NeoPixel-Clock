@@ -17,27 +17,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
+#include "CuckooAlarm-decimal.h"
 
-#include <Adafruit_NeoPixel.h>
-
-class ITimer
-{
-    public:
-      ITimer(Adafruit_NeoPixel *sTrip){
-        strip = sTrip; 
-      }
-      virtual void Show(boolean clear_background, boolean mix_colors) = 0;
-
-      virtual void Show(){ Show(false, false); }
-      virtual ~ITimer() {}
-
-      uint32_t static hex2rgb(char* hexstring);
-      uint32_t static mixColors(uint32_t c1, uint32_t c2, float ratio);
-      uint32_t static mixColors(uint32_t c1, uint32_t c2){return mixColors(c1,c2,0.5);}
-
-    protected:
-      Adafruit_NeoPixel *strip;
-            
-      uint32_t wheel(byte WheelPos);
-};
+//public 
+void CuckooAlarm_decimal::Show(boolean clear_background, boolean mix_colors){
+  if(strip==NULL) return;
+  
+  if(j>=strip->numPixels()) j=0;  
+  
+  for (uint16_t i=0; i < strip->numPixels(); i+=1) {
+    if(i<(uint8_t)j) strip->setPixelColor(i, color);
+    else if(i>(uint8_t)j) strip->setPixelColor(i, 0);
+  }
+  strip->setPixelColor((uint8_t)j+1, mixColors(0,color,j-(uint8_t)j));
+  
+  j+=0.05;
+}

@@ -41,7 +41,7 @@ uint32_t ITimer::hex2rgb(char* hexstring) {
     return 0;
 }      
 
-uint32_t ITimer::mixColors(uint32_t c1, uint32_t c2){
+uint32_t ITimer::mixColors(uint32_t c1, uint32_t c2, float ratio){
     uint8_t w1 = c1>>24 & 0xFF;
     uint8_t r1 = c1>>16 & 0xFF;
     uint8_t g1 = c1>>8 & 0xFF;
@@ -52,11 +52,10 @@ uint32_t ITimer::mixColors(uint32_t c1, uint32_t c2){
     uint8_t g2 = c2>>8 & 0xFF;
     uint8_t b2 = c2 & 0xFF;
   
-    uint8_t w = w1/2+w2/2;
-    uint8_t r = r1/2+r2/2;
-    uint8_t g = g1/2+g2/2;
-    uint8_t b = b1/2+b2/2;
-  
+    uint8_t w = (1.0-ratio)*w1+ratio*w2;
+    uint8_t r = (1.0-ratio)*r1+ratio*r2;
+    uint8_t g = (1.0-ratio)*g1+ratio*g2;
+    uint8_t b = (1.0-ratio)*b1+ratio*b2;  
     return ((uint32_t)w << 24) | ((uint32_t)r << 16) | ((uint32_t)g <<  8) | b;
 }  
 

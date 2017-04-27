@@ -19,25 +19,17 @@ SOFTWARE.
 
 #pragma once
 
-#include <Adafruit_NeoPixel.h>
+#include "ITimer.h"
 
-class ITimer
+class CuckooAlarm_decimal : virtual public ITimer
 {
+    private:
+      float j=0;
+      uint32_t color = Adafruit_NeoPixel::Color(127, 127, 0);
+
     public:
-      ITimer(Adafruit_NeoPixel *sTrip){
-        strip = sTrip; 
-      }
-      virtual void Show(boolean clear_background, boolean mix_colors) = 0;
-
+      CuckooAlarm_decimal(Adafruit_NeoPixel *strip) : ITimer(strip){}
+      
+      virtual void Show(boolean clear_background, boolean mix_colors);
       virtual void Show(){ Show(false, false); }
-      virtual ~ITimer() {}
-
-      uint32_t static hex2rgb(char* hexstring);
-      uint32_t static mixColors(uint32_t c1, uint32_t c2, float ratio);
-      uint32_t static mixColors(uint32_t c1, uint32_t c2){return mixColors(c1,c2,0.5);}
-
-    protected:
-      Adafruit_NeoPixel *strip;
-            
-      uint32_t wheel(byte WheelPos);
 };
