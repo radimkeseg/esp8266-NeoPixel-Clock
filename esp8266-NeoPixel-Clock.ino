@@ -216,8 +216,8 @@ void loop() {
   if (stamp - lastDrew > 500 || stamp < lastDrew || !clear) {
     
     //adjust brightness
-    if(clock.getHourInt()>=22 || clock.getHourInt()<6) strip.setBrightness(cs.settings.brightness);
-    else strip.setBrightness(cs.settings.brightness_night);
+    if(clock.getHourInt()>=22 || clock.getHourInt()<6) strip.setBrightness(cs.settings.brightness_night);
+    else strip.setBrightness(cs.settings.brightness);
 
     //show clock hands
     clock.Show(clear, clear); delay(10);
