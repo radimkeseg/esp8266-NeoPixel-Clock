@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>NeoPixel Cuckoo</title>
+
+<script>
+ var simplePicker = {
+   colorize: function(color, destID){
+     if(color.match(/^#[0-9a-f]{3,6}$/)){
+     document.getElementById(destID).style.backgroundColor = color;
+     document.getElementById(destID).className = "color-box";
+   }else{
+     document.getElementById(destID).style.backgroundColor = "";
+     document.getElementById(destID).className = "color-box color-box-error";
+   }
+   },
+   
+   init: function(){
+    this.colorize('{val-hand-hour}','box-hand-hour');
+    this.colorize('{val-hand-mins}','box-hand-mins');
+    this.colorize('{val-hand-secs}','box-hand-secs');
+    this.colorize('{val-segm-hour}','box-segm-hour');
+    this.colorize('{val-dots-hour}','box-dots-hour');
+    this.colorize('{val-dots-qrtr}','box-dots-qrtr');
+   }   
+  };
+  
+  window.onload = function(){
+    simplePicker.init();
+  }
+</script>
+ 
+<style>
+.color-box{
+    width: 32px;
+    height: 20px;
+    display: inline-block;
+    border: 1px solid #000;
+    margin-bottom: -7px;
+}
+.color-box-error{
+    border: 1px solid #f00;
+}
+p, body{
+	font: normal 13px Tahoma;
+}
+
+.time_hour, .time_mins{
+	width: 3em;
+}
+</style>
+
+<body>
+<h1>NeoPixel Cuckoo</h1>
+<p>
+Neopixel Cuckoo with an ESP8266 IoT device
+<p/>
+
+<form method='post' action='offset'>
+<label>UTC TimeOffset<br><input id='_timeoffset' name='_timeoffset' length=5 pattern='^[0-9-\\.]{1,5}$' required value='{timeoffset}'></label><br>
+<label>DST<br><input id='_dst' name='_dst' type='checkbox' {dst}></label><br>
+<br/>
+<label>Brightness<br><input id='_brightness' name='_brightness' length=3 pattern='^[0-9]{3,0}$' value='{brightness}'></label><br>
+<br/>
+<label>Hand colors:</label><br/>
+<label><input id="input-hand-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-hour" title="e.g. #f00 or #ff0000" value="{val-hand-hour}" onkeyup="simplePicker.colorize(this.value,'box-hand-hour')" ><div class="color-box" id="box-hand-hour"></div> hours</label><br/>
+<label><input id="input-hand-mins" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-mins" title="e.g. #0a0 or #00aa00" value="{val-hand-mins}" onkeyup="simplePicker.colorize(this.value,'box-hand-mins')"><div class="color-box" id="box-hand-mins"></div> minutes</label><br/>
+<label><input id="input-hand-secs" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-secs" title="e.g. #202 or #220022" value="{val-hand-secs}" onkeyup="simplePicker.colorize(this.value,'box-hand-secs')"><div class="color-box" id="box-hand-secs"></div> seconds</label><br/>
+<label>Face</label><br>
+<label><input id="input-segm-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-segm-hour" title="e.g. #220 or #222200" value="{val-segm-hour}" onkeyup="simplePicker.colorize(this.value,'box-segm-hour')"><div class="color-box" id="box-segm-hour"></div> hour segment</label><br/>
+<label><input id="input-dots-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-dots-hour" title="e.g. #002 or #000022" value="{val-dots-hour}" onkeyup="simplePicker.colorize(this.value,'box-dots-hour')"><div class="color-box" id="box-dots-hour"></div> hour dots</label><br/>
+<label><input id="input-dots-qrtr" type="text" pattern="#[0-9a-f]{3,6}" name="_input-dots-qrtr" title="e.g. #005 or #000055" value="{val-dots-qrtr}" onkeyup="simplePicker.colorize(this.value,'box-dots-qrtr')"><div class="color-box" id="box-dots-qrtr"></div> quarter dots</label><br/>
+<br/>
+<table>
+<tr>
+<td><label>ALARM-1 <input id='_alarm-1' name='_alarm-1' type='checkbox' {alarm}></label></td>
+<td><label> @ <input id='_alarmHour-1' name='_alarmHour-1' length=2 pattern='^[0-9]{2,0}$' value='{alarmHour-1}' class="time_hour">:<input id='_alarmMins-1' name='_alarmMins-1' length=2 pattern='^[0-9]{2,0}$' value='{alarmMins-1}' class="time_mins"></label></td>
+<td><label> Type
+	<select id='_s_alarm-1' name='_s_alarm-1'>{_options_alarm_1}
+		<option selected>Red Ring</option>
+		<option>Green Ring</option>
+		<option>Blue Ring</option>
+	</select></label>
+</td>
+</tr>
+<tr>
+<td><label>ALARM-2 <input id='_alarm-2' name='_alarm-2' type='checkbox' {alarm}></label></td>
+<td><label> @ <input id='_alarmHour-2' name='_alarmHour-2' length=2 pattern='^[0-9]{2,0}$' value='{alarmHour-2}' class="time_hour">:<input id='_alarmMins-2' name='_alarmMins-2' length=2 pattern='^[0-9]{2,0}$' value='{alarmMins-2}' class="time_mins"></label></td>
+<td><label> Type
+	<select id='_s_alarm-2' name='_s_alarm-2'>{_options_alarm_2}
+		<option selected>Red Ring</option>
+		<option>Green Ring</option>
+		<option>Blue Ring</option>
+	</select></label>
+</td>
+</tr>
+<tr>
+<td><label>ALARM-3 <input id='_alarm-3' name='_alarm-3' type='checkbox' {alarm}></label></td>
+<td><label> @ <input id='_alarmHour-3' name='_alarmHour-3' length=2 pattern='^[0-9]{2,0}$' value='{alarmHour}' class="time_hour">:<input id='_alarmMins-3' name='_alarmMins-3' length=2 pattern='^[0-9]{2,0}$' value='{alarmMins-3}' class="time_mins"></label></td>
+<td><label> Type
+	<select id='_s_alarm-3' name='_s_alarm-3'>{_options_alarm_3}
+		<option selected>Red Ring</option>
+		<option>Green Ring</option>
+		<option>Blue Ring</option>
+	</select></label>
+</td>
+</tr>
+</table>
+<br/>
+<input type='submit' value='Store'></form>
+
+
+</body>
+</html>
