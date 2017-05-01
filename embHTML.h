@@ -74,7 +74,8 @@ Neopixel Cuckoo with an ESP8266 IoT device
 <label>UTC TimeOffset<br><input id='_timeoffset' name='_timeoffset' length=5 pattern='^[0-9-\\.]{1,5}$' required value='{timeoffset}'></label><br>
 <label>DST<br><input id='_dst' name='_dst' type='checkbox' {dst}></label><br>
 <br/>
-<label>Brightness<br><input id='_brightness' name='_brightness' length=3 pattern='^[0-9]{3,0}$' value='{brightness}'></label><br>
+<label>Brightness by daylight<br><input id='_brightness' name='_brightness' length=3 pattern='^[0-9]{3,0}$' value='{brightness}'></label><br>
+<label>Brightness at night<br><input id='_brightness_night' name='_brightness_night' length=3 pattern='^[0-9]{3,0}$' value='{brightness_night}'>22:00-06:00</label><br>
 <br/>
 <lable>Hand colors:</label><br/>
 <label><input id="input-hand-hour" type="text" pattern="#[0-9a-f]{3,6}" name="_input-hand-hour" title="e.g. #f00 or #ff0000" value="{val-hand-hour}" onkeyup="simplePicker.colorize(this.value,'box-hand-hour')" ><div class="color-box" id="box-hand-hour"></div> hours</label><br/>

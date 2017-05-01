@@ -70,6 +70,7 @@ void CustomSettings::print(){
     Serial.print("UTC TimeOffset: "); Serial.println(settings.UTC_OFFSET);
     Serial.print("DST: "); Serial.println(settings.DST);
     Serial.print("brightness: "); Serial.println(settings.brightness);
+    Serial.print("brightness night: "); Serial.println(settings.brightness_night);
     Serial.print("color hand hour: "); Serial.println(settings.color_hand_hour);
     Serial.print("color hand mins: "); Serial.println(settings.color_hand_mins);
     Serial.print("color hand secs: "); Serial.println(settings.color_hand_secs);

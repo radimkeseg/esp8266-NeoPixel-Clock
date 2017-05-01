@@ -78,6 +78,7 @@ void handle_root()
   else    content.replace("{dst}", "");
 
   content.replace("{brightness}", String(cs.settings.brightness).c_str());
+  content.replace("{brightness_night}", String(cs.settings.brightness_night).c_str());
 
   content.replace("{val-hand-hour}", cs.settings.color_hand_hour);
   content.replace("{val-hand-mins}", cs.settings.color_hand_mins);
@@ -104,6 +105,7 @@ void handle_store_settings(){
     cs.settings.UTC_OFFSET = atof(server.arg("_timeoffset").c_str());
     cs.settings.DST = server.arg("_dst").length()>0;
     cs.settings.brightness = atoi(server.arg("_brightness").c_str());
+    cs.settings.brightness_night = atoi(server.arg("_brightness_night").c_str());
     strncpy(cs.settings.color_hand_hour, server.arg("_input-hand-hour").c_str(), 8);
     strncpy(cs.settings.color_hand_mins, server.arg("_input-hand-mins").c_str(), 8);
     strncpy(cs.settings.color_hand_secs, server.arg("_input-hand-secs").c_str(), 8);
@@ -192,6 +194,8 @@ void loop() {
   // Handle OTA update requests
 //  ArduinoOTA.handle();
 
+
+  
   clear = true;
 
   //effect by alarm
@@ -210,6 +214,12 @@ void loop() {
   // show clock
   stamp = millis();
   if (stamp - lastDrew > 500 || stamp < lastDrew || !clear) {
+    
+    //adjust brightness
+    if(clock.getHourInt()>=22 || clock.getHourInt()<6) strip.setBrightness(cs.settings.brightness);
+    else strip.setBrightness(cs.settings.brightness_night);
+
+    //show clock hands
     clock.Show(clear, clear); delay(10);
     lastDrew = stamp;
   }
@@ -222,7 +232,6 @@ void loop() {
 
 
 void updateData(){
-  strip.setBrightness(cs.settings.brightness);
   clock.SetTimeOffset(cs.settings.UTC_OFFSET+cs.settings.DST);
   clock.SetUp(ITimer::hex2rgb(
     cs.settings.color_hand_hour), ITimer::hex2rgb(cs.settings.color_hand_mins), ITimer::hex2rgb(cs.settings.color_hand_secs), ITimer::hex2rgb(cs.settings.color_segm_hour), 

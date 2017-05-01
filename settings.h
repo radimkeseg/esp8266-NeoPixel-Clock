@@ -35,6 +35,7 @@ typedef struct
   float UTC_OFFSET;
   boolean DST; 
   uint8_t brightness;
+  uint8_t brightness_night;
   boolean ALARM_SWITCH; 
   uint8_t alarmHour;
   uint8_t alarmMins;
@@ -61,7 +62,8 @@ class CustomSettings{
     CustomSettings(){
       settings.UTC_OFFSET = 1;
       settings.DST = false;
-      settings.brightness = 10;
+      settings.brightness = 35;
+      settings.brightness_night = 10;
       settings.ALARM_SWITCH = false;
       settings.alarmHour = 8;
       settings.alarmMins = 0;

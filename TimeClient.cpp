@@ -52,9 +52,11 @@ void TimeClient::updateTime() {
 
   String line;
 
+  uint32_t theTime = millis();
   int size = 0;
   client.setNoDelay(false);
   while(client.connected()) {
+    if( ( millis() - theTime ) > 30*1000 || millis() < theTime ){Serial.print("INFINITE LOOP BREAK!"); break;}  //exit loop after one second.
     while((size = client.available()) > 0) {
       line = client.readStringUntil('\n');
       line.toUpperCase();
