@@ -144,18 +144,30 @@ void setup() {
   //wifiManager.resetSettings();
   wifiManager.setAPCallback(configModeCallback);
   //or use this for auto generated name ESP + ChipID
-  wifiManager.autoConnect();
+
+
+  //sets timeout until configuration portal gets turned off
+  //useful to make it all retry or go to sleep
+  //in seconds
+  wifiManager.setTimeout(180);
+
+  String hostname = String("Neopixel-Cuckoo") + String("-") + String(ESP.getChipId(), HEX);
+  //fetches ssid and pass and tries to connect
+  //if it does not connect it starts an access point with the specified name
+  //here  "AutoConnectAP"
+  //and goes into a blocking loop awaiting configuration
+  if(!wifiManager.autoConnect( hostname.c_str() ) ){
+    Serial.println("failed to connect and hit timeout");
+    delay(3000);
+    //reset and try again, or maybe put it to deep sleep
+    ESP.reset();
+    delay(5000);
+  }   
 
   //Manual Wifi
   //WiFi.begin(WIFI_SSID, WIFI_PWD);
 
-
-  // OTA Setup
-  String hostname(HOSTNAME);
-  hostname += String(ESP.getChipId(), HEX);
   WiFi.hostname(hostname);
-//  ArduinoOTA.setHostname((const char *)hostname.c_str());
-//  ArduinoOTA.begin();
   
   cs.init();
   cs.read();   
